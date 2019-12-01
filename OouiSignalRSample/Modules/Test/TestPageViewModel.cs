@@ -51,7 +51,7 @@ namespace OouiSignalRSample.Modules.Test
                 options.Headers["Email"] = "test@test.com";
                 options.Headers["PhoneNumber"] = random.Next(555555555, 595555555).ToString();
                 options.Headers["TicketType"] = "Suggestion";
-                options.Headers["FirstName"] = "Client Mahmut";
+                options.Headers["FirstName"] = "Smith " + random.Next(1,999);
             }).Build();
             await HubConnection.StartAsync();
 

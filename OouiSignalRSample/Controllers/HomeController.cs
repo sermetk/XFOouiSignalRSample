@@ -11,7 +11,7 @@ namespace OouiSignalRSample.Controllers
     {
         public IActionResult Index()
         {
-            var page = new ChatPage();
+            var page = new NavigationPage(new ChatPage());
             var element = page.GetOouiElement();
             return new ElementResult(element, "Support");
         }
