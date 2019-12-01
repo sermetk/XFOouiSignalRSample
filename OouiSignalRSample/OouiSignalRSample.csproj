@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UserSecretsId>bca578be-4c5f-4e9c-98d2-242a64325283</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Images\chat_background.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.9.4" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.0.0" />
+    <PackageReference Include="Ooui" Version="0.11.303" />
+    <PackageReference Include="Ooui.Forms" Version="0.11.303" />
+    <PackageReference Include="Ooui.AspNetCore" Version="0.11.303" />
+    <PackageReference Include="Xamarin.Forms" Version="4.3.0.991211" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
+	<DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Images\chat_background.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Modules\ChatPage.xaml.cs">
+      <DependentUpon>ChatPage.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Modules\ChatPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Modules\Test\TestPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>
