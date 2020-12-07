@@ -1,6 +1,8 @@
 # XFOouiSignalRSample
 Experimental Xamarin Web Customer Support Screen with Ooui and SignalR
 
+Based on: https://github.com/praeclarum/Ooui
+
 # Screenshot
 ![alt text](https://miro.medium.com/max/4148/1*-Zv6KU0ritJ0UGuGixMOwQ.png)
 
