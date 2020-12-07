@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using Microsoft.AspNetCore.SignalR;
 using OouiSignalRSample.Core;
 using OouiSignalRSample.Core.Base;
+using OouiSignalRSample.Core.Hubs;
 using OouiSignalRSample.Modules.Test;
 using OouiSignalRSample.Utility;
-using System.Collections.Generic;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,34 +21,35 @@ namespace OouiSignalRSample.Modules.Support
             get { return _message; }
             set { _message = value; OnPropertyChanged(); }
         }
-        private HubConnection HubConnection;
         private string SelectedConnectionId;
         public string Name => "Supporter Alia";
         public string BannedUserMobilePhone { get; set; }
         #endregion
 
-        #region CustomCommands
-
+        #region Commands
         public ICommand SendMessageCommand { get; set; }
         public ICommand SelectedUserCommand { get; set; }
         public ICommand UserInfoCommand { get; set; }
-        public ICommand TestCommand { get; set; }
+        public ICommand ClientTestPageCommand { get; set; }
         public ICommand BanUserCommand { get; set; }
         public ICommand OpenBanCommand { get; set; }
         #endregion
 
         #region Services
+        private readonly IHubContext<ChatHub, IChatHub> hubContext;
         #endregion
 
         #region Methods
-        public ChatPageViewModel()
+
+        public ChatPageViewModel(IHubContext<ChatHub, IChatHub> hubContext)
         {
+            this.hubContext = hubContext;
             Init();
         }
-        public async override void Init()
+
+        public override void Init()
         {
             InitCommands();
-            await LoadData(Connect);
         }
         public override void InitCommands()
         {
@@ -56,7 +58,7 @@ namespace OouiSignalRSample.Modules.Support
             {
                 if (e is User user)
                 {
-                    ConnectedUsers.Current.SelectedUserMessages = ToObservableCollection(ConnectedUsers.Current.ActiveUsers.FirstOrDefault(x => x == user).Messages);
+                    ConnectedUsers.Current.SelectedUserMessages = new ObservableCollection<MessageDto>(ConnectedUsers.Current.ActiveUsers.FirstOrDefault(x => x == user).Messages);
                     foreach (var item in ConnectedUsers.Current.ActiveUsers)
                     {
                         if (item == user)
@@ -92,9 +94,9 @@ namespace OouiSignalRSample.Modules.Support
                 else
                     await SendMessage();
             });
-            TestCommand = new CustomCommand(async () =>
+            ClientTestPageCommand = new CustomCommand(async () =>
             {
-                await RootPage.PushAsync(new TestPage());
+                await RootPage.PushAsync(new ClientTestPage());
             });
             BanUserCommand = new CustomCommand(async (e) =>
             {
@@ -107,7 +109,6 @@ namespace OouiSignalRSample.Modules.Support
                 if (dialog)
                 {
                     ConnectedUsers.Current.BannedUsers.Add(user.PhoneNumber);
-                    await HubConnection.InvokeAsync("BlockUser", SelectedConnectionId);
                 }
             });
             OpenBanCommand = new CustomCommand(async () =>
@@ -126,28 +127,24 @@ namespace OouiSignalRSample.Modules.Support
                 }
             });
         }
-        private ObservableCollection<T> ToObservableCollection<T>(IEnumerable<T> _LinqResult)
-        {
-            return new ObservableCollection<T>(_LinqResult);
-        }
         #endregion
 
         #region Api Calls
-        private async Task Connect()
-        {
-            var url = "http://localhost:49795/chat";
-            HubConnection = new HubConnectionBuilder().WithUrl(url, options =>
-            {
-                options.Headers["Supporter"] = "Yes";
-            }).Build();
-            await HubConnection.StartAsync();
-        }
-
         private async Task SendMessage()
         {
             if (string.IsNullOrEmpty(Message) || string.IsNullOrEmpty(SelectedConnectionId))
                 return;
-            await HubConnection.InvokeAsync("SendMessageToCustomer", SelectedConnectionId, Message);
+            var user = ConnectedUsers.Current.ActiveUsers.FirstOrDefault(x => x.ClientId == SelectedConnectionId);
+            if (user != null)
+            {
+                user.Messages.Add(new MessageDto { Message = Message, MessageTime = DateTime.UtcNow.AddHours(3) });
+                if (user.IsSelected)
+                {
+                    ConnectedUsers.Current.SelectedUserMessages.Clear();
+                    ConnectedUsers.Current.SelectedUserMessages = new ObservableCollection<MessageDto>(user.Messages);
+                }
+            }
+            await hubContext.Clients.Client(SelectedConnectionId).ReceiveMessage(Message);
             Message = string.Empty;
         }
         #endregion
