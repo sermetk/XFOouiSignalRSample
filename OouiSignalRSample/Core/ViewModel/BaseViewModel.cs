@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace OouiSignalRSample.Core
@@ -23,12 +21,13 @@ namespace OouiSignalRSample.Core
             set { _isPageLoading = value; OnPropertyChanged(); }
         }
         private bool _isClickLoading;
+
         public bool IsClickLoading
         {
             get { return _isClickLoading; }
             set { _isClickLoading = value; OnPropertyChanged(); }
         }
-        #endregion Properties
+        #endregion
 
         #region Methods
         public abstract void Init();
@@ -38,42 +37,18 @@ namespace OouiSignalRSample.Core
         #endregion
 
         #region Tasks
-        public async Task LoadData(params Func<Task>[] execute)
+        public async Task LoadData(params Task[] tasks)
         {
-            try
-            {
-                IsClickLoading = true;
-                var tasks = execute.Select(c => c());
-                await Task.WhenAll(tasks);
-                GC.Collect();
-            }
-            catch (Exception)
-            {
-
-            }
-            finally
-            {
-                IsClickLoading = false;
-            }
+            IsClickLoading = true;
+            await Task.WhenAll(tasks);
+            IsClickLoading = false;
 
         }
-        public async Task LoadInitData(params Func<Task>[] execute)
+        public async Task LoadInitData(params Task[] tasks)
         {
-            try
-            {
-                IsPageLoading = true;
-                var tasks = execute.Select(c => c());
-                await Task.WhenAll(tasks);
-                GC.Collect();
-            }
-            catch (Exception)
-            {
-
-            }
-            finally
-            {
-                IsPageLoading = false;
-            }
+            IsPageLoading = true;
+            await Task.WhenAll(tasks);
+            IsPageLoading = false;
         }
         #endregion
     }

@@ -6,19 +6,18 @@ namespace OouiSignalRSample.Core.Base
 {
     public class CustomCommand : ICommand
     {
-        public event EventHandler CanExecuteChanged;
         public int ClickCount { get; set; }
-        private bool IsClickLoading;
-        readonly Func<object, bool> _canExecute;
-        readonly Action<object> _execute;
-        public CustomCommand(Action<object> execute, bool isClickLoading = true)
+        public event EventHandler CanExecuteChanged;
+        private readonly Func<object, bool> _canExecute;
+        private readonly Action<object> _execute;
+
+        public CustomCommand(Action<object> execute)
         {
-            IsClickLoading = isClickLoading;
             _execute = execute ?? throw new ArgumentNullException(nameof(execute));
         }
-        public CustomCommand(Action execute, bool isClickLoading = true) : this(o => execute())
+
+        public CustomCommand(Action execute) : this(o => execute())
         {
-            IsClickLoading = isClickLoading;
             if (execute == null)
                 throw new ArgumentNullException(nameof(execute));
         }
@@ -40,7 +39,6 @@ namespace OouiSignalRSample.Core.Base
         {
             if (_canExecute != null)
                 return _canExecute(parameter);
-
             return true;
         }
 

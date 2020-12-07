@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="OouiSignalRSample.Modules.Test.ClientTestPage"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:behaviors="clr-namespace:OouiSignalRSample.Behaviors"
+    xmlns:converters="clr-namespace:OouiSignalRSample.Converters"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Padding="20"
+    mc:Ignorable="d">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:BoolToReverseConverter x:Key="BoolToReverseConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="50" />
+            </Grid.RowDefinitions>
+            <Label
+                FontAttributes="Bold"
+                HorizontalOptions="Center"
+                Text="Client Test Screen" />
+            <ListView
+                Grid.Row="1"
+                Margin="0,0,-18,0"
+                ItemsSource="{Binding Messages}"
+                RowHeight="75"
+                SeparatorVisibility="None">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid Margin="20,5,20,5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="50" />
+                                </Grid.ColumnDefinitions>
+
+                                <!--  user messages  -->
+                                <Image
+                                    Grid.Column="2"
+                                    HeightRequest="50"
+                                    IsVisible="{Binding IsUserMessage}"
+                                    Source="https://img.icons8.com/cotton/2x/gender-neutral-user--v2.png"
+                                    VerticalOptions="Center"
+                                    WidthRequest="50" />
+
+                                <Frame
+                                    Grid.ColumnSpan="2"
+                                    BorderColor="LightGray"
+                                    CornerRadius="12"
+                                    IsVisible="{Binding IsUserMessage}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="30" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label
+                                            HorizontalOptions="FillAndExpand"
+                                            Text="{Binding Message}"
+                                            VerticalOptions="FillAndExpand" />
+                                        <Label
+                                            Grid.Column="1"
+                                            Margin="0,10,0,0"
+                                            FontSize="Small"
+                                            HorizontalOptions="End"
+                                            Text="{Binding MessageTime, StringFormat='{0:HH:mm}'}" />
+                                    </Grid>
+                                </Frame>
+                                <!--  user messages  -->
+
+                                <!--  support response messages  -->
+                                <Image
+                                    HeightRequest="50"
+                                    IsVisible="{Binding IsUserMessage, Converter={StaticResource BoolToReverseConverter}}"
+                                    Source="https://img.icons8.com/cotton/2x/gender-neutral-user--v2.png"
+                                    VerticalOptions="Center"
+                                    WidthRequest="50" />
+                                <Frame
+                                    Grid.Column="1"
+                                    Grid.ColumnSpan="2"
+                                    BorderColor="LightGray"
+                                    CornerRadius="12"
+                                    IsVisible="{Binding IsUserMessage, Converter={StaticResource BoolToReverseConverter}}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="30" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label
+                                            HorizontalOptions="FillAndExpand"
+                                            Text="{Binding Message}"
+                                            VerticalOptions="FillAndExpand" />
+                                        <Label
+                                            Grid.Column="1"
+                                            Margin="0,10,0,0"
+                                            FontSize="Small"
+                                            HorizontalOptions="End"
+                                            Text="{Binding MessageTime, StringFormat='{0:HH:mm}'}" />
+                                    </Grid>
+                                </Frame>
+                                <!--  support response messages  -->
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                <ListView.Behaviors>
+                    <behaviors:ListViewScrollBehaviour />
+                </ListView.Behaviors>
+            </ListView>
+            <StackLayout
+                Grid.Row="2"
+                Margin="30,0,0,0"
+                HorizontalOptions="Center"
+                Orientation="Horizontal"
+                WidthRequest="500">
+                <Entry Text="{Binding Message}" WidthRequest="300" />
+                <Button Command="{Binding SendMessageCommand}" Text="Send" />
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>
